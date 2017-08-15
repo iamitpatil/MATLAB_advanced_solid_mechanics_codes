@@ -20,13 +20,33 @@ C=[ EI 0; 0 kapa*thickness*G];
 
 % mesh
 numberElements = 100;
-nodeCoordinates=linspace(0,L,numberElements+1); xx=nodeCoordinates’;
+nodeCoordinates=linspace(0,L,numberElements+1); xx=nodeCoordinates';
 for i=1:size(nodeCoordinates,2)-1
     elementNodes(i,1)=i; 
     elementNodes(i,2)=i+1;
     end
 % generation of coordinates and 
 numberNodes=size(xx,1);
-% GDof: global number of degrees of freedom GDof=2*numberNodes;
-% computation of the system stiffness matrix [stiffness,force]=...
-formStiffnessMassTimoshenkoBeam(GDof,numberElements,... elementNodes,numberNodes,xx,C,P,1,I,thickness);
+% GDof: global number of degrees of freedom 
+GDof=2*numberNodes;
+% computation of the system stiffness matrix 
+[stiffness,force]=formStiffnessMassTimoshenkoBeam(GDof,numberElements,elementNodes,numberNodes,xx,C,P,1,I,thickness);
+% boundary conditions (simply-supported at both bords)
+%fixedNodeW =[1 ; numberNodes];
+%fixedNodeTX=[];
+% boundary conditions (clamped at both bords)
+fixedNodeW =[1 ; numberNodes];
+fixedNodeTX=fixedNodeW;
+% boundary conditions (cantilever)
+fixedNodeW =[1];
+fixedNodeTX=[1];
+prescribedDof=[fixedNodeW; fixedNodeTX+numberNodes];
+% solution
+displacements=solution(GDof,prescribedDof,stiffness,force);
+% output displacements/reactions 
+outputDisplacementsReactions(displacements,stiffness,GDof,prescribedDof)
+U=displacements;
+ws=1:numberNodes;
+% max displacement 
+disp('max displacement') 
+min(U(ws))
