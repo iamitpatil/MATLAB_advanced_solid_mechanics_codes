@@ -1,1 +1,1 @@
-# MATLAB_Timoshenko_Beam_Analysis
+# MATLAB Timoshenko beam analysis 
